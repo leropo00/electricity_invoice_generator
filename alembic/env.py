@@ -7,13 +7,13 @@ from alembic import context
 
 from app.database.base import Base
 
+#### import of definitions that alembic tracks
+from app.database.models.customer import ElectricityCustomer, ElectricityProvider, CustomerContract
+####
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-
-### here all the models that are tracked by alembic will be added ###
-from app.database.models.customer import ElectricityCustomer, ElectricityProvider, CustomerContract
-### here all the models that are tracked by alembic will be added ###
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

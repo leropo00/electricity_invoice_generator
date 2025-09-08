@@ -48,14 +48,14 @@ class ElectricityProvider(Base, TimestampMixin):
 
 
 class CustomerContract(Base, TimestampMixin):
-    __tablename__ = "electricity_customer_contracts"
+    __tablename__ = "electricity_customers_contracts"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     provider_id: Mapped[int] = mapped_column(ForeignKey("electricity_providers.id"))
     customer_id: Mapped[int] = mapped_column(ForeignKey("electricity_customers.id"))
 
     customer_type: Mapped[CustomerType] = mapped_column(
-        SqlEnum(CustomerType, name="electricity_customer_contract_type", native_enum=True), nullable=False
+        SqlEnum(CustomerType, name="electricity_customers_contracts_type", native_enum=True), nullable=False
     )
 
     contract_number: Mapped[str] = mapped_column(String, unique=True)

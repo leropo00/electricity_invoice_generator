@@ -1,8 +1,8 @@
-"""add_customers_suppliers
+"""add_customers_and_supplier
 
-Revision ID: 3dbfa2496102
+Revision ID: 5c4966100c14
 Revises: 
-Create Date: 2025-09-08 18:42:02.676911
+Create Date: 2025-09-08 19:20:41.043418
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '3dbfa2496102'
+revision: str = '5c4966100c14'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -47,11 +47,11 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('electricity_customer_contracts',
+    op.create_table('electricity_customers_contracts',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('provider_id', sa.Integer(), nullable=False),
     sa.Column('customer_id', sa.Integer(), nullable=False),
-    sa.Column('customer_type', sa.Enum('RESIDENTIAL', 'BUSINESS', 'MUNICIPIAL', name='electricity_customer_contract_type'), nullable=False),
+    sa.Column('customer_type', sa.Enum('RESIDENTIAL', 'BUSINESS', 'MUNICIPIAL', name='electricity_customers_contracts_type'), nullable=False),
     sa.Column('contract_number', sa.String(), nullable=False),
     sa.Column('energy_meter_number', sa.String(), nullable=False),
     sa.Column('package_name', sa.String(), nullable=False),
