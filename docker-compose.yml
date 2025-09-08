@@ -1,4 +1,15 @@
+name: electrical-invoice-creator
+
 services:
+  fastapi-app:
+      build: .
+      image: fastapi-app
+      container_name: fastapi-app
+      ports:
+          - 8000:80
+      networks:
+        - electricity-invoices-network
+
   timescaledb:
     image: timescale/timescaledb-ha:pg16
     container_name: timescaledb

@@ -1,4 +1,4 @@
-FROM python:3.13-slim-bookworm
+FROM python:3.13-alpine
 
 # Install uv.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -8,6 +8,9 @@ COPY . /app
 
 # Install the application dependencies.
 WORKDIR /app
+
+RUN  apk add --no-cache postgresql-libs &&  apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev 
+
 RUN uv sync --frozen --no-cache
 
 # Run the application.
