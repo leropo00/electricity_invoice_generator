@@ -1,8 +1,8 @@
 """create_electricity_seasons_config
 
-Revision ID: 262a20992637
-Revises: 0331d38997aa
-Create Date: 2025-09-08 20:18:49.270323
+Revision ID: fa105b85ec97
+Revises: 3bb0acdd7998
+Create Date: 2025-09-08 20:38:18.629663
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '262a20992637'
-down_revision: Union[str, Sequence[str], None] = '0331d38997aa'
+revision: str = 'fa105b85ec97'
+down_revision: Union[str, Sequence[str], None] = '3bb0acdd7998'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

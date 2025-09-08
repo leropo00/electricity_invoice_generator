@@ -1,8 +1,8 @@
-"""add_invoice_data
+"""add_customers_and_supplier
 
-Revision ID: 0331d38997aa
-Revises: 5c4966100c14
-Create Date: 2025-09-08 19:40:11.988309
+Revision ID: 3bb0acdd7998
+Revises: abf0be0b2e47
+Create Date: 2025-09-08 20:37:24.273454
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '0331d38997aa'
-down_revision: Union[str, Sequence[str], None] = '5c4966100c14'
+revision: str = '3bb0acdd7998'
+down_revision: Union[str, Sequence[str], None] = 'abf0be0b2e47'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
