@@ -8,6 +8,7 @@ from alembic import context
 from app.database.base import Base
 
 #### import of definitions that alembic tracks
+from app.database.models.configuration import ElectricitySeasons
 from app.database.models.customer import ElectricityCustomer, ElectricityProvider, CustomerContract
 from app.database.models.invoice import ElectricityInvoice, ElectricityInvoiceItem
 ####
