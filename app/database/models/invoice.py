@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import  DateTime, Float, Enum as SqlEnum, ForeignKey, Integer, String
+from sqlalchemy import  DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from ..base import Base
