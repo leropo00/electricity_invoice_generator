@@ -3,8 +3,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-from app.database.models.customer import ElectricityCustomer
-from app.schema.customer import CustomerCreate
+from app.database.models.customer import ElectricityCustomer, CustomerContract, ElectricityProvider
+from app.schema.customer import CustomerCreate, CustomerUpdate, CustomerContractCreate, CustomerContractUpdate
 
 
 router = APIRouter(
@@ -17,11 +17,10 @@ def all_customers(session: Session = Depends(get_db)):
     return session.execute(select(ElectricityCustomer)).scalars().all()
 
 
-
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def create_customer(
        data: CustomerCreate,
-       session: Session = Depends(get_db)
+       session: Session = Depends(get_db),
  ):
     db_item = ElectricityCustomer(fullname=data.fullname,
                       email=data.email,
@@ -36,11 +35,10 @@ def create_customer(
     return db_item
 
 
-
 @router.put("/{customer_id}")
 def update_customer(
     customer_id: int,
-    data: CustomerCreate,
+    data: CustomerUpdate,
     session: Session = Depends(get_db)
  ):    
     db_item = session.query(ElectricityCustomer).filter(ElectricityCustomer.id == customer_id).first()
@@ -55,7 +53,96 @@ def update_customer(
     db_item.zip_code=data.zip_code,
     db_item.street_address=data.street_address,
     
+    session.commit()
+    session.refresh(db_item)
+    return db_item
+
+
+@router.delete("/{customer_id}", status_code=status.HTTP_204_NO_CONTENT )
+def delete_customer(
+    customer_id: int,
+    session: Session = Depends(get_db)
+ ):
+    db_item = session.query(ElectricityCustomer).filter(ElectricityCustomer.id == customer_id).first()
+    if not db_item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found"
+        )
+        
+    session.delete(db_item)
+    session.commit()
+
+
+@router.post("/{customer_id}/electricity_contract", status_code=status.HTTP_201_CREATED)
+def create_customer_contract(
+    customer_id: int,
+    data: CustomerContractCreate,     session: Session = Depends(get_db),
+ ):
+    customer_item = session.query(ElectricityCustomer).filter(ElectricityCustomer.id == customer_id).first()
+    if not customer_item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found"
+        )
+    db_item = CustomerContract(   
+        customer_id = customer_id,
+        provider_id = data.provider_id,
+        customer_type = data.customer_type,
+        contract_number = data.contract_number,
+        energy_meter_number = data.energy_meter_number,
+        package_name = data.package_name)
+    
     session.add(db_item)
     session.commit()
     session.refresh(db_item)
     return db_item
+
+
+
+@router.put("/{customer_id}/electricity_contract/{contract_id}")
+def update_customer_contract(
+    customer_id: int,
+    contract_id: int,
+    data: CustomerContractUpdate,
+    session: Session = Depends(get_db),
+ ):
+    customer_item = session.query(ElectricityCustomer).filter(ElectricityCustomer.id == customer_id).first()
+    if not db_item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found"
+        )
+
+    db_item = session.query(CustomerContract).filter(CustomerContract.id == contract_id).first()
+    if not db_item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Customer contract not found"
+        )
+
+    db_item.customer_id=customer_id
+    db_item.provider_id=data.provider_id
+    db_item.customer_type=data.customer_type
+    db_item.contract_number=data.contract_number
+    db_item.energy_meter_number=data.energy_meter_number
+    db_item.package_name=data.customer_typackage_namepe    
+
+    session.commit()
+    session.refresh(db_item)
+    return db_item
+
+
+@router.post("/{customer_id}/electricity_contract/{contract_id}/terminate")
+def terminate_customer_contract(
+    customer_id: int,
+    contract_id: int,
+    session: Session = Depends(get_db),
+ ):
+    db_item = session.query(CustomerContract).filter(CustomerContract.id == contract_id).first()
+    if not db_item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Customer contract not found"
+        )
+        
+    if db_item.termination_date is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_NOT_FOUND, detail="Contract already terimated"
+        )
+
