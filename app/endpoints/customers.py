@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -143,6 +145,12 @@ def terminate_customer_contract(
         
     if db_item.termination_date is not None:
         raise HTTPException(
-            status_code=status.HTTP_400_NOT_FOUND, detail="Contract already terimated"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Contract already terminated"
         )
+
+    db_item.termination_date=datetime.now()
+
+    session.commit()
+    session.refresh(db_item)
+    return db_item
 
