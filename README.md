@@ -1,50 +1,45 @@
-# fastapi-uv-starter
+# Electricity Invoice Creator
 
-A starter project using Python, FastAPI and uv.
+A starter project using Python, FastAPI, uv package manager and Timescaledb database. 
+TimescaleDB is a PostgreSQL extension for timeseries data.
+Alembic library is used to run migrations.
 
-<!-- TOC -->
+## How to setup 
+Docker is needed to run the containers. Move to the root folder of project and run command:
 
-- [fastapi-uv-starter](#fastapi-uv-starter)
-  - [Description](#description)
-  - [Prerequisites](#prerequisites)
-    - [1. Install Python 3 and uv](#1-install-python-3-and-uv)
-    - [2. Create a virtual environment with all necessary dependencies](#2-create-a-virtual-environment-with-all-necessary-dependencies)
-  - [Run application](#run-application)
-    - [Development mode](#development-mode)
-    - [Production mode](#production-mode)
-  - [Testing](#testing)
-    - [With coverage](#with-coverage)
-    - [With coverage and HTML output](#with-coverage-and-html-output)
-  - [Linting](#linting)
-  - [Formatting](#formatting)
-  - [Containerisation](#containerisation)
-    - [1. Build image and tag it as `fastapi-uv-starter`](#1-build-image-and-tag-it-as-fastapi-uv-starter)
-    - [2. Run a container of the previously tagged image (`fastapi-uv-starter`)](#2-run-a-container-of-the-previously-tagged-image-fastapi-uv-starter)
-    - [3. Check running containers](#3-check-running-containers)
-    - [4. Hit sample endpoint](#4-hit-sample-endpoint)
+```
+docker-compose up -d
+```
+You need to copy .env.example file to .env file for project settings. Change url to this based on default setting in docker compose.
 
-<!-- TOC -->
+```
+DATABASE_URI=postgresql://postgres:password@localhost:5433/electricity_invoices
+```
 
-## Description
 
-A project starter for personal usage containing the following:
+After running container, you need to run alembic migrations to create tables.
 
-- [Python 3.13.\*](https://www.python.org/)
-- [FastAPI](https://fastapi.tiangolo.com/) web framework
-- Structured logging using [`structlog`](https://www.structlog.org/)
-- Dependency management using [`uv`](https://docs.astral.sh/uv/)
-- Containerisation using a Dockerfile
-- Testing with [`pytest`](https://docs.pytest.org/) and optionally with coverage
-  with [`pytest-cov`](https://pytest-cov.readthedocs.io/)
-- Linting/formatting using [`ruff`](https://beta.ruff.rs/docs/)
-- [`.gitignore`](https://github.com/github/gitignore/blob/main/Python.gitignore)
+```sh
+# enter the container
+docker exec -it fastapi-app sh
+# run migrations that creates tables and fills some data
+alembic upgrade head
+# leave the container
+exit
+```
 
-## Prerequisites
+Since FastAPI is used, after starting project,
+swagger with all endpoints is present on url:
+http://localhost:8000/docs
 
-- [Python 3.13.\*](https://www.python.org/downloads/)
-- [uv](https://docs.astral.sh/uv/)
 
-### 1. Install Python 3 and uv
+## Data needed for document parsing
+
+Certain data like electricity provider data is already created via migrations.
+But you need to create via enpoints suppliers and their contracts with selected provider, to have enough data to create invoice.
+
+
+### Alternative: how to run Run application outside docker
 
 **MacOS (using `brew`)**
 
@@ -69,7 +64,8 @@ From the root of the project execute:
 uv sync
 ```
 
-## Run application
+## Command to run Run application outside docker
+
 
 ### Development mode
 
@@ -113,47 +109,3 @@ uv run ruff check app/* tests/*
 uv run ruff format app/* tests/*
 ```
 
-## Containerisation
-
-The following `podman` commands are direct replacements of the Docker CLI. You can see that their syntax is identical:
-
-### 1. Build image and tag it as `fastapi-uv-starter`
-
-```bash
-podman image build -t fastapi-uv-starter .
-```
-
-### 2. Run a container of the previously tagged image (`fastapi-uv-starter`)
-
-Run our FastAPI application and map our local port `8000` to `80` on the running container:
-
-```bash
-podman container run -d --name fastapi-uv-starter -p 8000:80 --network bridge fastapi-uv-starter
-```
-
-### 3. Check running containers
-
-```bash
-podman ps
-```
-
-```bash
-CONTAINER ID  IMAGE                            COMMAND               CREATED         STATUS             PORTS                 NAMES
-78586e5b4683  localhost/fastapi-uv-starter:latest  uvicorn main:app ...  13 minutes ago  Up 5 minutes ago  0.0.0.0:8000->80/tcp  nifty_roentgen
-```
-
-### 4. Hit sample endpoint
-
-Our FastAPI server now runs on port `8000` on our local machine. We can test it with:
-
-```bash
-curl -i http://localhost:8000/healthcheck
-```
-
-Output:
-
-```bash
-HTTP/1.1 200 OK
-server: uvicorn
-content-length: 0
-```
