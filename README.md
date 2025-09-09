@@ -38,6 +38,13 @@ http://localhost:8000/docs
 Certain data like electricity provider data is already created via migrations.
 But you need to create via enpoints suppliers and their contracts with selected provider, to have enough data to create invoice.
 
+For measurement .csv file to be valid it should be in form filename-{id}.csv.
+
+In this example filename could be anything, {id} should be a number of supplier id in database.
+Last '-' is separator between id, filename must end with .csv.
+Capitalization is ignored in filename.
+Csv file should use semicolon ';' for separation of values.
+
 
 ### Alternative: how to run Run application outside docker
 
