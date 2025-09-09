@@ -8,6 +8,7 @@ from app.database.models.customer import ElectricityProvider
 
 router = APIRouter(
     prefix="/providers",
+    tags=["Providers"],
 )
 
 @router.get("/")
