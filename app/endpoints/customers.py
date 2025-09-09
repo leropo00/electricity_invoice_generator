@@ -108,7 +108,7 @@ def update_customer_contract(
     session: Session = Depends(get_db),
  ):
     customer_item = session.query(ElectricityCustomer).filter(ElectricityCustomer.id == customer_id).first()
-    if not db_item:
+    if not customer_item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found"
         )
