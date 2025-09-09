@@ -78,13 +78,27 @@ def delete_customer(
 @router.post("/{customer_id}/electricity_contract", status_code=status.HTTP_201_CREATED)
 def create_customer_contract(
     customer_id: int,
-    data: CustomerContractCreate,     session: Session = Depends(get_db),
+    data: CustomerContractCreate,     
+    session: Session = Depends(get_db),
  ):
     customer_item = session.query(ElectricityCustomer).filter(ElectricityCustomer.id == customer_id).first()
     if not customer_item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found"
         )
+        
+    active_contract = session.query(CustomerContract).filter(CustomerContract.customer_id == customer_id).filter(CustomerContract.termination_date == None).first()
+    if active_contract:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Active contract for customer already exists"
+        )
+        
+    existing_contract_number = session.query(CustomerContract).filter(CustomerContract.contract_number == data.contract_number).first()
+    if existing_contract_number:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Contract number already exits. Contract number must be unique over all users"
+        )
+            
     db_item = CustomerContract(   
         customer_id = customer_id,
         provider_id = data.provider_id,
@@ -117,6 +131,12 @@ def update_customer_contract(
     if not db_item:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Customer contract not found"
+        )
+        
+    existing_contract_number = session.query(CustomerContract).filter(CustomerContract.contract_number == data.contract_number).filter(CustomerContract.id != data.customer_id).first()
+    if existing_contract_number:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Contract number already exits. Contract number must be unique over all users"
         )
 
     db_item.customer_id=customer_id
