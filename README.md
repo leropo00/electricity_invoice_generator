@@ -1,4 +1,4 @@
-# Electricity Invoice Creator
+# Electricity Invoice Generator
 
 A starter project using Python, FastAPI, uv package manager and Timescaledb database. 
 TimescaleDB is a PostgreSQL extension for timeseries data.
