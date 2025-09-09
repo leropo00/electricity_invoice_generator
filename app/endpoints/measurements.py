@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, status, UploadFile
 import pandas as pd
 from sqlalchemy.orm import Session
 
+from app.database.models.customer import ElectricityCustomer
 from app.database.session import get_db
 
 router = APIRouter(
@@ -27,6 +28,11 @@ def upload_csv(file: UploadFile = File(...),
                             detail="Filename has no information about supplier id, this should be in form -id.csv")
 
     customer_id = regex_customer_id.group(1)
+    db_item = session.query(ElectricityCustomer).filter(ElectricityCustomer.id == customer_id).first()
+    if not db_item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found"
+        )
 
 
     sql_columns = ['customer_id', 'measured_at', 'consumption_kwh', 'price_per_kwh', 'created_at', 'updated_at']
