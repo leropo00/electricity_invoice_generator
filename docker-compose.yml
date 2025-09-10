@@ -2,13 +2,15 @@ name: electrical-invoice-creator
 
 services:
   fastapi-app:
-      build: .
-      image: fastapi-app
-      container_name: fastapi-app
-      ports:
-          - 8000:80
-      networks:
-        - electricity-invoices-network
+       build: .
+       image: fastapi-app
+       container_name: fastapi-app
+       ports:
+           - 8000:8000
+       networks:
+         - electricity-invoices-network
+       volumes:
+          - .:/app
 
   timescaledb:
     image: timescale/timescaledb-ha:pg16
@@ -27,6 +29,7 @@ services:
 
 networks:
   electricity-invoices-network:
+    name: electricity-invoices-network
     driver: bridge
 
 volumes:

@@ -11,7 +11,12 @@ WORKDIR /app
 
 RUN  apk add --no-cache postgresql-libs &&  apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev 
 
+RUN  apk add --no-cache glib pango
+
+RUN  apk add --no-cache fontconfig  ttf-dejavu  ttf-freefont
+
 RUN uv sync --frozen --no-cache
 
-# Run the application.
-CMD ["/app/.venv/bin/fastapi", "run", "app/main.py", "--port", "80", "--host", "0.0.0.0"]
+
+CMD ["uv", "run", "fastapi", "dev", "--host", "0.0.0.0"]
+
