@@ -37,6 +37,23 @@ def create_customer(
     return db_item
 
 
+@router.get("/{customer_id}")
+def customer_details(
+    customer_id: int,
+    session: Session = Depends(get_db)
+ ):   
+    customer_item = session.query(ElectricityCustomer).filter(ElectricityCustomer.id == customer_id).first()
+    if not customer_item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found"
+        )
+        
+    active_contract = session.query(CustomerContract).filter(CustomerContract.customer_id == customer_id).filter(CustomerContract.termination_date == None).first()
+    if active_contract:    
+        customer_item.active_contract = active_contract
+        
+    return customer_item
+
 @router.put("/{customer_id}")
 def update_customer(
     customer_id: int,
@@ -48,12 +65,12 @@ def update_customer(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Customer not found"
         )
-    db_item.fullname=data.fullname,
-    db_item.email=data.email,
-    db_item.tax_code=data.tax_code, 
-    db_item.zip_name=data.zip_name,
-    db_item.zip_code=data.zip_code,
-    db_item.street_address=data.street_address,
+    db_item.fullname=data.fullname
+    db_item.email=data.email
+    db_item.tax_code=data.tax_code 
+    db_item.zip_name=data.zip_name
+    db_item.zip_code=data.zip_code
+    db_item.street_address=data.street_address
     
     session.commit()
     session.refresh(db_item)
