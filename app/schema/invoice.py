@@ -11,5 +11,5 @@ class CreateInvoice(BaseModel):
     receiver_reference: str
     invoice_number: str
     location_issued: str
-    invoice_code: str
+    invoice_code: str = 'OTHR'
     days_payment_due: int = 15

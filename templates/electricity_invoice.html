@@ -45,7 +45,7 @@
     <p>Številka podobe #: {{ contract.contract_number }}</p>
     <p>Številka števca : {{ contract.energy_meter_number }}</p>
     <p>Paket/produkt: {{ contract.package_name }}</p>
-    <p>Vrsta odjema: {{ contract.customer_type.value }}</p>
+    <p>Vrsta odjema: {{ contract.customer_type.slo_label() }}</p>
 
     <hr>
 

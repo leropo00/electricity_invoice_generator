@@ -208,6 +208,9 @@ def calculate_time_block_ranges(session: Session, year: int, month: int, custome
     start_date = date(year, month, 1)
     end_date = start_date + relativedelta(months=1)
     
+    # this is final date of the range
+    final_date_measurements = end_date - relativedelta(days=1)
+    
     timeblock_usage = []
         
     for time_block in possible_time_blocks:           
@@ -225,7 +228,7 @@ def calculate_time_block_ranges(session: Session, year: int, month: int, custome
 
         # it could be possible that price is 0 fro time block, but consumtion should still be present
         if consumption_sum > 0:
-            timeblock_usage.append({'time_block': time_block, 'consumption': consumption_sum, 'price': price_sum, 'start_date': start_date, 'end_date': end_date})
+            timeblock_usage.append({'time_block': time_block, 'consumption': consumption_sum, 'price': price_sum, 'start_date': start_date, 'end_date': final_date_measurements})
         
     return timeblock_usage
 

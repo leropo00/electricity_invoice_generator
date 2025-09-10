@@ -17,6 +17,14 @@ class CustomerType(Enum):
     MUNICIPIAL = "municipal"
 
 
+    def slo_label(self):
+        return {
+            'residential': 'Gospodinjski odjem',
+            'commercial': 'Poslovni odjem',
+            'industrial': 'Industrijski odjem'
+        }[self.value]
+
+
 class ElectricityCustomer(Base, TimestampMixin):
     __tablename__ = "electricity_customers"
     
