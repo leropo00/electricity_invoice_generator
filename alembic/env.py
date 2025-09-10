@@ -11,7 +11,7 @@ from app.database.base import Base
 from app.database.models.configuration import ElectricitySeason, HourlyBlockLevel
 from app.database.models.customer import ElectricityCustomer, ElectricityProvider, CustomerContract
 from app.database.models.invoice import ElectricityInvoice, ElectricityInvoiceItem
-from app.database.models.measurements import ElectricityUsage
+from app.database.models.measurement import ElectricityUsage
 ####
 
 # this is the Alembic Config object, which provides
