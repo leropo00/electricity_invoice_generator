@@ -152,3 +152,18 @@ def create_invoice_pdf_document(
         media_type="application/pdf",
         headers={"Content-Disposition": "attachment; filename="+filename}
     )
+    
+    
+@router.delete("/{invoice_id}", status_code=status.HTTP_204_NO_CONTENT )
+def delete_invoice(
+    invoice_id: int,
+    session: Session = Depends(get_db)
+ ):
+    db_item = session.query(ElectricityInvoice).filter(ElectricityInvoice.id == invoice_id).first()
+    if not db_item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found"
+        )
+        
+    session.delete(db_item)
+    session.commit()

@@ -1,7 +1,6 @@
-from typing import Annotated
 from app.schema.custom_type import MonthType, YearType
 
-from pydantic import BaseModel, conint
+from pydantic import BaseModel
 
 class CreateInvoice(BaseModel):
     customer_id: int
