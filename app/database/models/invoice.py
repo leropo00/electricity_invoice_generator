@@ -33,7 +33,8 @@ class ElectricityInvoice(Base, TimestampMixin):
     base_amount: Mapped[float] = mapped_column(Float)
     tax_amount: Mapped[float] = mapped_column(Float)
     total_amount: Mapped[float] = mapped_column(Float)
-    
+    total_quantity: Mapped[float] = mapped_column(Float)
+
     items: Mapped[List["ElectricityInvoiceItem"]] = relationship(
         back_populates="electricity_invoice",
         cascade="all, delete",

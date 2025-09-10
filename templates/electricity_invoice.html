@@ -74,6 +74,7 @@
     </table>
 
     <table class="totals">
+        <tr><td class="header"><strong>Skupna poraba:</strong></td><td>{{ "%.2f"|format(invoice.total_quantity) }} kWh</td></tr>
         <tr><td class="header"><strong>Osnova:</strong></td><td>{{ "%.2f"|format(invoice.base_amount) }} €</td></tr>
         <tr><td class="header"><strong>DDV po stopnji 22%:</strong></td><td>{{ "%.2f"|format(invoice.tax_amount) }} €</td></tr>
         <tr><td class="header"><strong>Znesek za plačilo</strong></td><td><strong>{{ "%.2f"|format(invoice.total_amount) }} €</strong></td></tr>

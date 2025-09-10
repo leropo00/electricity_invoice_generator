@@ -83,6 +83,7 @@ def create_invoice_record(
         base_amount=base_amount,
         tax_amount=tax_amount,
         total_amount=total_amount,
+        total_quantity=total_consumption 
     )
     
     session.add(invoice)
@@ -104,6 +105,29 @@ def create_invoice_record(
     session.refresh(invoice)
     return invoice
 
+
+
+@router.get("/{invoice_id}")
+def get_invoice_details(
+    invoice_id: int,
+    session: Session = Depends(get_db),
+ ):
+    invoice = session.query(ElectricityInvoice).options(
+        selectinload(ElectricityInvoice.items)
+    ).filter(ElectricityInvoice.id == invoice_id).first()    
+    if not invoice:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invoice not found"
+        )
+        
+    customer_contract = session.query(CustomerContract).options(
+            joinedload(CustomerContract.provider),
+            joinedload(CustomerContract.customer)
+        ).filter(CustomerContract.id == invoice.contract_id).first()    
+    if customer_contract:
+        invoice.customer_contract = customer_contract
+
+    return invoice
 
 @router.post("/{invoice_id}/document")
 def create_invoice_pdf_document(
