@@ -98,7 +98,7 @@ def create_invoice_record(
     return invoice
 
 
-@router.post("/{invoice_id}/document", status_code=status.HTTP_201_CREATED)
+@router.post("/{invoice_id}/document")
 def create_invoice_pdf_document(
     invoice_id: int,
     session: Session = Depends(get_db),
