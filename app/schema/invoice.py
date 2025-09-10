@@ -1,6 +1,15 @@
-from pydantic import BaseModel
+from typing import Annotated
+from app.schema.custom_type import MonthType, YearType
+
+from pydantic import BaseModel, conint
 
 class CreateInvoice(BaseModel):
     customer_id: int
-    month: int
-    year: int
+    month:  MonthType
+    year:  YearType
+    payment_reason: str
+    receiver_reference: str
+    invoice_number: str
+    location_issued: str
+    invoice_code: str
+    days_payment_due: int = 15
