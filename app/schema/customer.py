@@ -21,6 +21,7 @@ class CustomerUpdate(BaseModel):
     zip_code: ZipCode
     zip_name: str
 
+
 class CustomerContractCreate(BaseModel):
     provider_id: int
     customer_type: CustomerType

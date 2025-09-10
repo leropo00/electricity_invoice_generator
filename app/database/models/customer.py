@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List
 
-from sqlalchemy import  DateTime, Enum as SqlEnum, ForeignKey, Integer, String
+from sqlalchemy import DateTime, Enum as SqlEnum, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ..base import Base
@@ -16,20 +16,19 @@ class CustomerType(Enum):
     BUSINESS = "business"
     MUNICIPIAL = "municipal"
 
-
     def slo_label(self):
         return {
-            'residential': 'Gospodinjski odjem',
-            'commercial': 'Poslovni odjem',
-            'industrial': 'Industrijski odjem'
+            "residential": "Gospodinjski odjem",
+            "commercial": "Poslovni odjem",
+            "industrial": "Industrijski odjem",
         }[self.value]
 
 
 class ElectricityCustomer(Base, TimestampMixin):
     __tablename__ = "electricity_customers"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
-    
+
     fullname: Mapped[str] = mapped_column(String)
     email: Mapped[str] = mapped_column(String)
     tax_code: Mapped[str] = mapped_column(String)
@@ -37,19 +36,20 @@ class ElectricityCustomer(Base, TimestampMixin):
     street_address: Mapped[str] = mapped_column(String)
     zip_code: Mapped[int] = mapped_column(Integer)
     zip_name: Mapped[str] = mapped_column(String)
-    
+
     contracts: Mapped[List["CustomerContract"]] = relationship(
         back_populates="customer",
         cascade="all, delete",
     )
 
+
 class ElectricityProvider(Base, TimestampMixin):
     __tablename__ = "electricity_providers"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
-    
+
     full_title: Mapped[str] = mapped_column(String)
-    email: Mapped[str] = mapped_column(String)    
+    email: Mapped[str] = mapped_column(String)
     webpage: Mapped[str] = mapped_column(String)
 
     tax_code: Mapped[str] = mapped_column(String)
@@ -70,13 +70,20 @@ class CustomerContract(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     provider_id: Mapped[int] = mapped_column(ForeignKey("electricity_providers.id"))
-    provider: Mapped["ElectricityProvider"] = relationship("ElectricityProvider", back_populates="contracts")
+    provider: Mapped["ElectricityProvider"] = relationship(
+        "ElectricityProvider", back_populates="contracts"
+    )
 
     customer_id: Mapped[int] = mapped_column(ForeignKey("electricity_customers.id"))
-    customer: Mapped["ElectricityCustomer"] = relationship("ElectricityCustomer", back_populates="contracts")
+    customer: Mapped["ElectricityCustomer"] = relationship(
+        "ElectricityCustomer", back_populates="contracts"
+    )
 
     customer_type: Mapped[CustomerType] = mapped_column(
-        SqlEnum(CustomerType, name="electricity_customers_contracts_type", native_enum=True), nullable=False
+        SqlEnum(
+            CustomerType, name="electricity_customers_contracts_type", native_enum=True
+        ),
+        nullable=False,
     )
 
     contract_number: Mapped[str] = mapped_column(String, unique=True)
@@ -85,4 +92,3 @@ class CustomerContract(Base, TimestampMixin):
 
     # when terminated, it is no longer an active contract
     termination_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    

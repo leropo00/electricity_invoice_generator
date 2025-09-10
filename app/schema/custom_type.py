@@ -2,12 +2,15 @@ from typing import Annotated
 
 from pydantic import AfterValidator
 
+
 def validate_four_digit_zip(value: int) -> int:
     if not (1000 <= value <= 9999):
         raise ValueError("zip_code must be exactly 4 digits")
     return value
 
+
 ZipCode = Annotated[int, AfterValidator(validate_four_digit_zip)]
+
 
 def validate_month(value: int) -> int:
     if not (1 <= value <= 12):

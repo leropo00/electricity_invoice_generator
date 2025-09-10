@@ -3,6 +3,7 @@ from pydantic import BaseModel, EmailStr, HttpUrl
 from app.database.models.customer import CustomerType
 from app.schema.custom_type import ZipCode
 
+
 class ProviderCreate(BaseModel):
     full_title: str
     email: EmailStr
@@ -23,4 +24,3 @@ class ProviderUpdate(BaseModel):
     street_address: str
     zip_code: ZipCode
     zip_name: str
-
