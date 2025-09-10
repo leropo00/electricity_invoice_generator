@@ -133,9 +133,7 @@ def create_invoice_pdf_document(
         'provider': orm_object_to_dict_exclude_default(customer_contract.provider),
         'customer': orm_object_to_dict_exclude_default(customer_contract.customer),
     }
-    
-    print(render_data)
-        
+            
     pdf_buffer = io.BytesIO()
     HTML(string=report.render(render_data)).write_pdf(pdf_buffer)
     pdf_buffer.seek(0)

@@ -1,74 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Electricity Bill Invoice</title>
+    <title>Electricity Invoice {{ invoice.invoice_number }}</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
-        h1 { text-align: center; }
-        .header, .footer { text-align: center; margin-bottom: 20px; }
-        .details, .charges { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        .details td, .charges th, .charges td { border: 1px solid #ccc; padding: 8px; }
-        .charges th { background-color: #f2f2f2; }
-        .total { font-weight: bold; }
+        h1, h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .totals { margin-top: 20px; float: right; width: 300px; }
+        .totals td { border: none; }
     </style>
 </head>
 <body>
 
-    <h1>Electricity Bill Invoice</h1>
+    <h1>Electricity Invoice</h1>
+    <h2>Invoice #: {{ invoice.invoice_number }}</h2>
 
-    <div class="header">
-        <p><strong>Company:</strong> {{ company_name }}</p>
-        <p><strong>Billing Date:</strong> {{ billing_date }}</p>
-        <p><strong>Invoice Number:</strong> {{ invoice_number }}</p>
-    </div>
+    <p><strong>Issued Date:</strong> {{ invoice.issued_date.strftime('%Y-%m-%d') }}</p>
+    <p><strong>Service Date:</strong> {{ invoice.service_date.strftime('%Y-%m-%d') }}</p>
+    <p><strong>Due Date:</strong> {{ invoice.due_date.strftime('%Y-%m-%d') }}</p>
+    <p><strong>Location Issued:</strong> {{ invoice.location_issued }}</p>
 
-    <table class="details">
-        <tr>
-            <td><strong>Customer Name:</strong> {{ customer_name }}</td>
-            <td><strong>Account Number:</strong> {{ account_number }}</td>
-        </tr>
-        <tr>
-            <td><strong>Address:</strong> {{ address }}</td>
-            <td><strong>Billing Period:</strong> {{ billing_period }}</td>
-        </tr>
-    </table>
+    <hr>
 
-    <table class="charges">
+    <h2>Provider Information</h2>
+    <p>{{ provider.full_title }}</p>
+    <p>{{ provider.street_address }}, {{ provider.zip_code }} {{ provider.zip_name }}</p>
+    <p>Email: {{ provider.email }} | Web: <a href="{{ provider.webpage }}">{{ provider.webpage }}</a></p>
+    <p>Tax Code: {{ provider.tax_code }} | IBAN: {{ provider.iban_number }}</p>
+
+    <hr>
+
+    <h2>Customer Information</h2>
+    <p>{{ customer.fullname }}</p>
+    <p>{{ customer.street_address }}, {{ customer.zip_code }} {{ customer.zip_name }}</p>
+    <p>Email: {{ customer.email }} | Tax Code: {{ customer.tax_code }}</p>
+
+    <hr>
+
+    <h2>Contract Details</h2>
+    <p>Contract #: {{ contract.contract_number }}</p>
+    <p>Meter #: {{ contract.energy_meter_number }}</p>
+    <p>Package: {{ contract.package_name }}</p>
+    <p>Customer Type: {{ contract.customer_type.value }}</p>
+
+    <hr>
+
+    <h2>Invoice Items</h2>
+    <table>
         <thead>
             <tr>
-                <th>Storitev</th>
-				<th>Količina</th>
-				<th>Znesek brez ddv</th>
-			</tr>
+                <th>Name</th>
+                <th>Unit</th>
+                <th>Quantity</th>
+                <th>Amount (€)</th>
+                <th>From</th>
+                <th>To</th>
+            </tr>
         </thead>
         <tbody>
-            {% for item in usage_details %}
+            {% for item in invoice.invoice_items %}
             <tr>
-                <td>{{ item.description }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.unit }}</td>
                 <td>{{ item.quantity }}</td>
-                <td>{{ item.amount }}</td>
+                <td>{{ "%.2f"|format(item.amount) }}</td>
+                <td>{{ item.date_from.strftime('%Y-%m-%d') }}</td>
+                <td>{{ item.date_to.strftime('%Y-%m-%d') }}</td>
             </tr>
             {% endfor %}
-            <tr>
-                <td colspan="2" class="total">Subtotal</td>
-                <td>{{ subtotal }}</td>
-            </tr>
-            <tr>
-                <td colspan="2" class="total">Taxes</td>
-                <td>{{ taxes }}</td>
-            </tr>
-            <tr>
-                <td colspan="2" class="total">Total Amount Due</td>
-                <td>{{ total_due }}</td>
-            </tr>
         </tbody>
     </table>
 
-    <div class="footer">
-        <p>Payment Due By: <strong>{{ due_date }}</strong></p>
-        <p>Thank you for using {{ company_name }}!</p>
-    </div>
+    <table class="totals">
+        <tr><td><strong>Base Amount:</strong></td><td>{{ "%.2f"|format(invoice.base_amount) }} €</td></tr>
+        <tr><td><strong>Tax Amount:</strong></td><td>{{ "%.2f"|format(invoice.tax_amount) }} €</td></tr>
+        <tr><td><strong>Total Amount:</strong></td><td><strong>{{ "%.2f"|format(invoice.total_amount) }} €</strong></td></tr>
+    </table>
+
+    <hr>
+
+    <h2>Payment Details</h2>
+    <p><strong>Reason:</strong> {{ invoice.payment_reason }}</p>
+    <p><strong>Invoice Code:</strong> {{ invoice.invoice_code }}</p>
+    <p><strong>Receiver IBAN:</strong> {{ invoice.receiver_IBAN }}</p>
+    <p><strong>Reference:</strong> {{ invoice.receiver_reference }}</p>
 
 </body>
 </html>
