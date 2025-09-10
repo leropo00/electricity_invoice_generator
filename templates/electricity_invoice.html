@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <title>Račun št.: {{ invoice.invoice_number }}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
+        body { font-family: Arial, sans-serif; margin: 20px; }
         h1, h2 { color: #333; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
-        .totals { margin-top: 20px; float: right; width: 300px; }
-        .totals td { border: none; }
+        .totals { margin-top: 20px; }
+		.totals td.header { background-color: #f2f2f2; }
     </style>
 </head>
 <body>
@@ -45,7 +45,7 @@
     <p>Številka podobe #: {{ contract.contract_number }}</p>
     <p>Številka števca : {{ contract.energy_meter_number }}</p>
     <p>Paket/produkt: {{ contract.package_name }}</p>
-    <p>Vrsta odjama: {{ contract.customer_type.value }}</p>
+    <p>Vrsta odjema: {{ contract.customer_type.value }}</p>
 
     <hr>
 
@@ -74,13 +74,13 @@
     </table>
 
     <table class="totals">
-        <tr><td><strong>Osnova:</strong></td><td>{{ "%.2f"|format(invoice.base_amount) }} €</td></tr>
-        <tr><td><strong>DDV po stopnji 22%:</strong></td><td>{{ "%.2f"|format(invoice.tax_amount) }} €</td></tr>
-        <tr><td><strong>Znesek za plačilo</strong></td><td><strong>{{ "%.2f"|format(invoice.total_amount) }} €</strong></td></tr>
+        <tr><td class="header"><strong>Osnova:</strong></td><td>{{ "%.2f"|format(invoice.base_amount) }} €</td></tr>
+        <tr><td class="header"><strong>DDV po stopnji 22%:</strong></td><td>{{ "%.2f"|format(invoice.tax_amount) }} €</td></tr>
+        <tr><td class="header"><strong>Znesek za plačilo</strong></td><td><strong>{{ "%.2f"|format(invoice.total_amount) }} €</strong></td></tr>
     </table>
 
     <hr>
-
+	
     <h2>Račun poravnajte z UPN obrazcem s podatki:</h2>
     <p><strong>Koda namena:</strong> {{ invoice.invoice_code }}</p>
     <p><strong>Namen plačila:</strong> {{ invoice.payment_reason }}</p>
