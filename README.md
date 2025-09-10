@@ -1,6 +1,6 @@
 # Electricity Invoice Generator
 
-A starter project using Python, FastAPI, uv package manager and Timescaledb database. 
+Project using Python, FastAPI, uv package manager and Timescaledb database. 
 TimescaleDB is a PostgreSQL extension for timeseries data.
 Alembic library is used to run migrations.
 
@@ -10,11 +10,18 @@ Docker is needed to run the containers. Move to the root folder of project and r
 ```
 docker-compose up -d
 ```
-You need to copy .env.example file to .env file for project settings. Change url to this based on default setting in docker compose.
+
+You need to copy .env.example file to .env file for project settings.
+Uncomment value bellow, and comment out sample value for DATABASE_URI:
 
 ```
-DATABASE_URI=postgresql://postgres:password@localhost:5433/electricity_invoices
+DATABASE_URI=postgresql://postgres:password@timescaledb/electricity_invoices
 ```
+
+This property is also repeated in file alembic.ini, which contains definitions for alembic migration tool
+sqlalchemy.url = postgresql://postgres:password@timescaledb/electricity_invoices
+
+
 
 
 After running container, you need to run alembic migrations to create tables.
@@ -23,21 +30,59 @@ After running container, you need to run alembic migrations to create tables.
 # enter the container
 docker exec -it fastapi-app sh
 # run migrations that creates tables and fills some data
-alembic upgrade head
+.venv/bin/alembic upgrade head
 # leave the container
 exit
 ```
 
 Since FastAPI is used, after starting project,
-swagger with all endpoints is present on url:
+Swagger with all endpoints is present on url:
 http://localhost:8000/docs
+
+
+I used DBeaver to check database state during developement, 
+if using default settings from container, add this string as connection:
+jdbc:postgresql://localhost:5433/electricity_invoices and use username,password from docker compose definition.
+
+
+## Alternatively you could also run only timescaledb service in container and use local installation of Python.
+
+In this case you should set DATABASE_URI property in .env file and property sqlalchemy.url in alembic.ini to this value:
+postgresql://postgres:password@localhost:5433/electricity_invoices
+If using local Python it is recommended to create virtual environment.
+Uv package manager is recommended for usage:
+
+### 1. Uv installation
+
+```bash
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3.13
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### 2. Create a virtual environment with all necessary dependencies
+
+From the root of the project execute:
+
+```bash
+uv sync
+```
+
+### 3. Run server in development mode
+
+```bash
+uv run fastapi dev
+```
+
 
 
 ## Application usage
 
 Certain data, like the default electricity provider, is already created via migrations.
 You can also add  additional providers.
-But you need to create via endpoints /customers.
+But you need to create the needed customer via endpoint /customers,
+to parse .csv files.
 After you create a customer, you also need to create customer contracts with the selected provider.
 Only then will you have enough data to create an invoice.
 
@@ -62,79 +107,9 @@ You need to delete it and recreate it.
 You can always recreate an invoice for selected combinations of 3 input parameters.
 Invoice items are calculated based on definitions of time blocks,
 this was used as a reference for data definitions.
+
 https://www.uro.si/w/casovni-blok
 
 These definitions are parsed via migrations,
 But there are no endpoints to change these definitions.
-
-
-### Alternative: how to run Run application outside docker
-
-**MacOS (using `brew`)**
-
-```bash
-brew install python@3.13 uv
-```
-
-**Ubuntu/Debian**
-
-```bash
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt update
-sudo apt install python3.13
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-### 2. Create a virtual environment with all necessary dependencies
-
-From the root of the project execute:
-
-```bash
-uv sync
-```
-
-## Command to run Run application outside docker
-
-
-### Development mode
-
-```bash
-uv run fastapi dev
-```
-
-### Production mode
-
-```bash
-uv run fastapi run
-```
-
-## Testing
-
-```bash
-uv run pytest
-```
-
-### With coverage
-
-```bash
-uv run pytest --cov=app
-```
-
-### With coverage and HTML output
-
-```bash
-uv run pytest --cov-report html --cov=app
-```
-
-## Linting
-
-```bash
-uv run ruff check app/* tests/*
-```
-
-## Formatting
-
-```bash
-uv run ruff format app/* tests/*
-```
 
