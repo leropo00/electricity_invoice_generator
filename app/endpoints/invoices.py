@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from jinja2 import Environment, FileSystemLoader
 from sqlalchemy import bindparam, extract, text
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, selectinload
 from weasyprint import HTML
 
 from app.database.models.configuration import SeasonDayType
@@ -107,28 +107,45 @@ def create_invoice_pdf_document(
     environment = Environment(loader=FileSystemLoader("templates"))
     report = environment.get_template("electricity_invoice.html")
 
-    render_data: dict = {'company_name': 'Bisol Doo', 'invoice_number': '1234567890', 'due_date': '12.12.2024'}
+    invoice = session.query(ElectricityInvoice).options(
+        selectinload(ElectricityInvoice.items)
+    ).filter(ElectricityInvoice.id == invoice_id).first()    
+    if not invoice:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invoice not found"
+        )
+        
+    customer_contract = session.query(CustomerContract).options(
+            joinedload(CustomerContract.provider, innerjoin=True),
+            joinedload(CustomerContract.customer, innerjoin=True)
+        ).filter(CustomerContract.id == invoice.contract_id).first()    
+    if not customer_contract:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Customer contract for invoice does not exists"
+        )
+        
+    invoice_template_data = orm_object_to_dict_exclude_default(invoice, ['contract_id'])
+    invoice_template_data['invoice_items'] = [orm_object_to_dict_exclude_default(item) for item in invoice.items]
+            
+    render_data = {
+        'invoice': invoice_template_data,
+        'contract': orm_object_to_dict_exclude_default(customer_contract, ['customer_id', 'provider_id', 'termination_date']),
+        'provider': orm_object_to_dict_exclude_default(customer_contract.provider),
+        'customer': orm_object_to_dict_exclude_default(customer_contract.customer),
+    }
     
-    render_data['usage_details'] = []
-    
-    # some data will need to be added to endpoint invoice that will be inserted in invoice
-    
-    # data needed
-    # electrictiy invoice
-        # join contract
-        # on joined contract
-        #   customer_id
-        #   
-    
+    print(render_data)
+        
     pdf_buffer = io.BytesIO()
     HTML(string=report.render(render_data)).write_pdf(pdf_buffer)
     pdf_buffer.seek(0)
-
+    
+    filename = "Racun_" + invoice.invoice_number + ".pdf"
     # Step 3: Return as StreamingResponse
     return StreamingResponse(
         pdf_buffer,
         media_type="application/pdf",
-        headers={"Content-Disposition": "attachment; filename=invoice.pdf"}
+        headers={"Content-Disposition": "attachment; filename="+filename}
     )
 
 
@@ -245,3 +262,19 @@ def calculate_time_block(session: Session, start_date: date, end_date: date, cus
     total_price = result.total_price
     total_consumption = result.total_consumption
     return total_price, total_consumption
+
+
+def orm_object_to_dict_exclude_default(obj, exclude_fields=None):
+    exclude_default = ['id', 'created_at', 'updated_at']
+    if exclude_fields:
+        exclude_default.extend(exclude_fields)
+    return orm_object_to_dict(obj, set(exclude_default))
+
+def orm_object_to_dict(obj, exclude_fields=None):
+    exclude_fields = exclude_fields or set()
+    #Relationships aren’t part of __table__.columns, so they’re already excluded by default. 
+    return {
+        column.name: getattr(obj, column.name)
+        for column in obj.__table__.columns
+        if column.name not in exclude_fields
+    }
