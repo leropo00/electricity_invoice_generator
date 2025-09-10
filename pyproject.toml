@@ -10,6 +10,7 @@ dependencies = [
     "fastapi[standard]>=0.115.12",
     "pandas>=2.3.2",
     "psycopg2>=2.9.10",
+    "python-dateutil>=2.9.0.post0",
     "python-dotenv>=1.1.0",
     "sqlalchemy>=2.0.43",
     "structlog>=25.2.0",
